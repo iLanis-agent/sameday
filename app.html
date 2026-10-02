@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SameDay - the birthday paradox, for any group</title>
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; background:#221a2b; color:#f0eaf5; line-height:1.5; }
+  .wrap { max-width:700px; margin:0 auto; padding:26px 16px 50px; }
+  h1 { font-size:28px; } h1 span { color:#ff8fb1; }
+  .sub { color:#b3a6c2; margin:6px 0 16px; }
+  .card { background:#31253d; border-radius:14px; padding:14px; margin-bottom:12px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; }
+  label { font-size:12px; color:#b3a6c2; display:block; margin-bottom:3px; }
+  input,select { width:100%; background:#221a2b; color:#f0eaf5; border:1px solid #54406a; border-radius:8px; padding:8px; font-size:15px; font-family:inherit; }
+  button { background:#473456; color:#f0eaf5; border:0; padding:8px 14px; border-radius:8px; cursor:pointer; font-size:14px; margin-right:6px; margin-top:10px; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:12px; } .big { font-size:46px; font-weight:800; line-height:1; color:#ff8fb1; } .big.b { color:#7fd6ff; }
+  .muted { color:#b3a6c2; font-size:13px; } .bar { height:12px; background:#221a2b; border-radius:6px; overflow:hidden; margin:10px 0 6px; } .bar i { display:block; height:100%; background:currentColor; }
+  .stats { display:flex; gap:22px; flex-wrap:wrap; margin-top:10px; } .stats b { display:block; font-size:20px; }
+  .err { color:#ff9c8a; } .note { font-size:12.5px; color:#85789a; margin-top:6px; }
+  @media (max-width:560px) { .two { grid-template-columns:1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Same<span>Day</span></h1>
+  <div class="sub">How likely is a match in a group? Pick the group size and the number of possible values (365 birthdays, 7 weekdays, a 32-bit ID).</div>
+  <div class="card">
+    <div class="grid"><div><label>People or items</label><input id="n" value="23" inputmode="numeric"></div><div><label>Possible values</label><input id="d" value="365" inputmode="numeric"></div><div><label>Preset</label><select id="pre"><option value="">Choose...</option><option value="365">Birthdays (365)</option><option value="12">Birth months (12)</option><option value="7">Weekdays (7)</option><option value="6">Dice (6)</option><option value="1000000">6-digit codes (1,000,000)</option><option value="4294967296">32-bit IDs (4,294,967,296)</option></select></div></div>
+    <button id="e1">Office of 30</button><button id="e2">Class of 23</button><button id="e3">250 people</button>
+  </div>
+  <div class="card"><div id="out"></div></div>
+  <div class="card"><div class="grid"><div><label>Target chance %</label><input id="tg" value="50" inputmode="decimal"></div></div><div id="need"></div></div>
+  <div class="note">Pair match: P = 1 - (d / d) x ((d-1) / d) x ... x ((d-n+1) / d). Your own day: P = 1 - ((d-1) / d)^n, where n counts the other people. Assumes every value is equally likely and independent. Real birthdays are slightly uneven, which makes matches a little more likely. Runs in your browser, nothing stored.</div>
+</div>
+<script src="engine.js"></script>
+<script>
+(function () {
+  var S = window.SameDay, $ = function (i) { return document.getElementById(i); };
+  function pc(p) { if (p === 0) return '0%'; if (p >= 0.99995) return p >= 1 ? '100%' : '99.99%+'; var x = p * 100; return (x < 0.01 ? x.toExponential(2) : x < 10 ? x.toFixed(2) : x.toFixed(1)) + '%'; }
+  function num(x) { return x.toLocaleString('en-US'); }
+  function render() {
+    var n = parseFloat($('n').value), d = parseFloat($('d').value), p = S.pair(n, d);
+    if (p === null) { $('out').innerHTML = '<div class="err">Enter a group size from 0 to 5,000,000 and at least 1 possible value.</div>'; $('need').innerHTML = ''; return; }
+    var m = S.me(Math.max(0, Math.floor(n) - 1), d), ep = S.expectedPairs(Math.floor(n), d);
+    $('out').innerHTML = '<div class="two"><div><div class="big">' + pc(p) + '</div><div class="muted">Some two of the ' + num(Math.floor(n)) + ' match</div><div class="bar" style="color:#ff8fb1"><i style="width:' + (p * 100) + '%"></i></div></div>' +
+      '<div><div class="big b">' + pc(m) + '</div><div class="muted">Someone matches YOU (the other ' + num(Math.max(0, Math.floor(n) - 1)) + ')</div><div class="bar" style="color:#7fd6ff"><i style="width:' + (m * 100) + '%"></i></div></div></div>' +
+      '<div class="stats"><div><span class="muted">Pairs of people</span><b>' + num(Math.floor(n) * (Math.floor(n) - 1) / 2) + '</b></div><div><span class="muted">Expected matching pairs</span><b>' + (ep < 1000 ? ep.toFixed(2) : num(Math.round(ep))) + '</b></div></div>';
+    var t = parseFloat($('tg').value) / 100, a = S.pairNeeded(t, d), b = S.meNeeded(t, d);
+    $('need').innerHTML = (a === null || b === null) ? '<div class="muted" style="margin-top:10px">Enter a target between 0 and 100 (exclusive).</div>' : '<div class="stats"><div><span class="muted">Group size for a ' + (t * 100) + '% pair match</span><b>' + num(a) + '</b></div><div><span class="muted">Others needed to match you</span><b>' + num(b) + '</b></div></div>';
+  }
+  function set(n, d) { $('n').value = n; $('d').value = d; render(); }
+  document.addEventListener('input', render); document.addEventListener('change', render);
+  $('pre').onchange = function () { if ($('pre').value) { $('d').value = $('pre').value; render(); } };
+  $('e1').onclick = function () { set(30, 365); }; $('e2').onclick = function () { set(23, 365); }; $('e3').onclick = function () { set(250, 365); };
+  render();
+})();
+</script>
+</body>
+</html>
