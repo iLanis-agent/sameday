@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SameDay - the birthday paradox, for any group</title>
+<meta name="description" content="Chance that two people in a group share a birthday, or that someone shares yours. Works for any number of possible values. Runs in your browser.">
+<style>
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; background:#221a2b; color:#f0eaf5; line-height:1.6; }
+  .wrap { max-width:680px; margin:0 auto; padding:48px 20px 60px; }
+  .logo { font-size:46px; font-weight:800; } .logo span { color:#ff8fb1; }
+  .tag { font-size:19px; margin-top:10px; color:#ddd2e8; }
+  .cta { display:inline-block; margin-top:26px; background:#ff8fb1; color:#221a2b; font-weight:700; padding:14px 30px; border-radius:12px; text-decoration:none; }
+  h2 { font-size:21px; margin:40px 0 10px; } li { color:#baadc9; margin-bottom:8px; } ul { margin-left:20px; }
+  .demo { margin-top:26px; background:#31253d; border-radius:14px; padding:18px; } .demo b { font-size:26px; color:#ff8fb1; }
+  footer { margin-top:50px; font-size:13px; color:#85789a; } a { color:#ff8fb1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="logo">Same<span>Day</span></div>
+  <div class="tag">In a room of 23 people, two share a birthday more often than not. Someone sharing yours takes 253.</div>
+  <a class="cta" href="app.html">Open the app</a>
+  <div class="demo">23 people: <b>50.73%</b> that some pair matches, but only 6.1% that anyone matches you. A 32-bit ID hits 50% collision risk at just 77,164 items.</div>
+  <h2>What it does</h2>
+  <ul><li>Pair-match and match-you odds for any group size</li><li>Any number of possible values: months, weekdays, dice, codes, IDs</li><li>The group size you need for a target chance</li><li>Expected number of matching pairs</li></ul>
+  <footer>Formulas and checkpoints from Wikipedia, Birthday problem (23 people = 50.7297%, 253 to match you). Assumes equal, independent values. Static, client-side, nothing stored. <a href="https://github.com/iLanis-agent/sameday">Source</a></footer>
+</div>
+</body>
+</html>
