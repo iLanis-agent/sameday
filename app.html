@@ -50,8 +50,8 @@
     var t = parseFloat($('tg').value) / 100, a = S.pairNeeded(t, d), b = S.meNeeded(t, d);
     $('need').innerHTML = (a === null || b === null) ? '<div class="muted" style="margin-top:10px">Enter a target between 0 and 100 (exclusive).</div>' : '<div class="stats"><div><span class="muted">Group size for a ' + (t * 100) + '% pair match</span><b>' + num(a) + '</b></div><div><span class="muted">Others needed to match you</span><b>' + num(b) + '</b></div></div>';
   }
-  function set(n, d) { $('n').value = n; $('d').value = d; render(); }
-  document.addEventListener('input', render); document.addEventListener('change', render);
+  function set(n, d) { $('n').value = n; $('d').value = d; $('pre').value = ''; render(); }
+  document.addEventListener('input', function (e) { if (e.target.id === 'd') $('pre').value = ''; render(); }); document.addEventListener('change', render);
   $('pre').onchange = function () { if ($('pre').value) { $('d').value = $('pre').value; render(); } };
   $('e1').onclick = function () { set(30, 365); }; $('e2').onclick = function () { set(23, 365); }; $('e3').onclick = function () { set(250, 365); };
   render();
